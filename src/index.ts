@@ -53,7 +53,7 @@ const PORT = Number(process.env.PORT || 4010);
  * Read allowed origins from environment variable CLIENT_ORIGIN.
  * Default includes common local dev hosts.
  */
-const rawOrigins = process.env.CLIENT_ORIGIN || "http://localhost:5173,http://127.0.0.1:5173";
+const rawOrigins = process.env.CLIENT_ORIGIN || "http://localhost:5173,http://127.0.0.1:5173,https://voice-server-et20.onrender.com";
 const allowedOrigins = rawOrigins
   .split(",")
   .map((s: string) => s.trim())
