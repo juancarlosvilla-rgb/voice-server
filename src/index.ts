@@ -53,7 +53,8 @@ const PORT = Number(process.env.PORT || 4010);
  * Read allowed origins from environment variable CLIENT_ORIGIN.
  * Default includes common local dev hosts.
  */
-const rawOrigins = process.env.CLIENT_ORIGIN || "http://localhost:5173,http://127.0.0.1:5173,https://voice-server-et20.onrender.com";
+const rawOrigins =
+  process.env.CLIENT_ORIGIN || "http://localhost:5173,http://127.0.0.1:5173";
 const allowedOrigins = rawOrigins
   .split(",")
   .map((s: string) => s.trim())
@@ -84,7 +85,10 @@ function isAllowedOrigin(origin?: string) {
 // Middleware: CORS and JSON parsing
 app.use(
   cors({
-    origin: (origin: string | undefined, cb: (err: Error | null, ok?: boolean) => void) => {
+    origin: (
+      origin: string | undefined,
+      cb: (err: Error | null, ok?: boolean) => void
+    ) => {
       if (isAllowedOrigin(origin)) cb(null, true);
       else cb(new Error("Not allowed by CORS"));
     },
@@ -99,9 +103,12 @@ app.use(express.json());
  * @param {import("express").Request} _req
  * @param {import("express").Response} res
  */
-app.get("/health", (_req: import("express").Request, res: import("express").Response) => {
-  res.json({ ok: true, service: "voice-server" });
-});
+app.get(
+  "/health",
+  (_req: import("express").Request, res: import("express").Response) => {
+    res.json({ ok: true, service: "voice-server" });
+  }
+);
 
 /**
  * Root endpoint — returns a small friendly message so the server root doesn't show
@@ -110,19 +117,25 @@ app.get("/health", (_req: import("express").Request, res: import("express").Resp
  * @param {import("express").Request} _req
  * @param {import("express").Response} res
  */
-app.get("/", (_req: import("express").Request, res: import("express").Response) => {
-  res.status(200).send("voice-server up");
-});
+app.get(
+  "/",
+  (_req: import("express").Request, res: import("express").Response) => {
+    res.status(200).send("voice-server up");
+  }
+);
 
 // PeerJS server (WebRTC signaling)
-// ExpressPeerServer returns an express-compatible handler used at /peerjs
-const peerServer = ExpressPeerServer(server, { path: "/peerjs" });
+// IMPORTANTE: Dejar path por defecto y montarlo en /peerjs -> endpoint final /peerjs
+const peerServer = ExpressPeerServer(server, {});
 app.use("/peerjs", peerServer);
 
 // Socket.IO (room membership / peer list)
 const io = new Server(server, {
   cors: {
-    origin: (origin: string | undefined, cb: (err: Error | null, ok?: boolean) => void) => {
+    origin: (
+      origin: string | undefined,
+      cb: (err: Error | null, ok?: boolean) => void
+    ) => {
       if (isAllowedOrigin(origin)) cb(null, true);
       else cb(new Error("Not allowed by CORS"));
     },
