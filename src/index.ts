@@ -207,6 +207,23 @@ io.on("connection", (socket: any) => {
     socket.leave(rid);
   });
 
+    /**
+   * Maneja cambios de estado de voz (mute / unmute) enviados por un cliente.
+   * Reenvía a los demás usuarios de la sala para actualizar el icono de micrófono.
+   */
+  socket.on(
+    "voice:state",
+    (payload: { roomId: string; uid: string; muted: boolean }) => {
+      const rid = normRoomId(payload?.roomId);
+      const uid = String(payload?.uid || "").trim();
+      const muted = !!payload?.muted;
+      if (!rid || !uid) return;
+
+      // Se lo mandamos a todos los demás en la sala
+      socket.to(rid).emit("voice:state", { uid, muted });
+    }
+  );
+
   /**
    * Handle socket disconnect: cleanup user membership if socket had joined a room.
    */
